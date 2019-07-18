@@ -1,10 +1,10 @@
-# Bookify
+# bookMaker
 
 A tool made to write documentation easily.
 
 ## Usage
 ```
-bookify init 
+bookMaker init 
 ```
 
 To create  initialize a new book. The folder directory will have the following configuration:
