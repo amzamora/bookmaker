@@ -1,0 +1,23 @@
+{
+  "name": "bookmaker",
+  "version": "0.1.0",
+  "description": "A tool made to write documentation easy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amzamora/bookmaker.git"
+  },
+  "author": "Alonso Zamorano",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/amzamora/bookmaker/issues"
+  },
+  "homepage": "https://github.com/amzamora/bookmaker#readme",
+  "dependencies": {
+    "showdown": "^1.9.0",
+    "toml": "^3.0.0"
+  }
+}
