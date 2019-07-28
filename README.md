@@ -1,16 +1,16 @@
-# book-maker
+# bookmaker
 
-A tool made to write documentation easily.
+A tool made to write documentation easy.
 
 ## Usage
 ```
-book-maker init 
+bookmaker init
 ```
 
 To create  initialize a new book. The folder directory will have the following configuration:
 ```
-index.md
 sections/
-  introduction.md
+themes/
+   default/
+settings.toml
 ```
-
