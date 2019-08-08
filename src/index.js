@@ -22,8 +22,8 @@ fs.readdirSync('sections/').forEach(file => {
 });
 
 // Verify for change in section names and existance of files
-for (let i = 0; i <= settings.sections.length; i++) {
-	if (files.some(file => file.sectionName === settings.sections[i])) { // If file of section don't exists
+for (let i = 0; i < settings.sections.length; i++) {
+	if (!files.some(file => file.sectionName === settings.sections[i])) { // If file of section don't exists
 		// Find if there is a file corresponding to the section number
 		let file = files.filter(file => file.number === i + 1)[0];
 
@@ -32,9 +32,9 @@ for (let i = 0; i <= settings.sections.length; i++) {
 
 		} else {
 			// Change file name
-			//fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
+			fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
 
-			// Change title name
+			// Change title in content
 		}
 	}
 }
@@ -43,7 +43,9 @@ for (let i = 0; i <= settings.sections.length; i++) {
 for (let i = 0; i < settings.sections.length; i++) {
 	let file = files.filter(file => file.sectionName === settings.sections[i])[0];
 
-	if (file.number !== i + 1) {
-		fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
+	if (file) {
+		if (file.number !== i + 1) {
+			fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
+		}
 	}
 }
