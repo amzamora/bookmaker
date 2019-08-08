@@ -4,7 +4,7 @@ const fs = require('fs');
 
 let settings = toml.parse(fs.readFileSync('settings.toml'));
 
-// If sections directory don't exists
+// If sections directory don't exists create it
 if (!fs.existsSync('sections/')) {
 	fs.mkdirSync('sections');
 }
@@ -16,44 +16,34 @@ fs.readdirSync('sections/').forEach(file => {
 	sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from name
 	files.push({
 		fileName: file,
-		sectionName: sectionName
+		sectionName: sectionName,
+		number: Number(file.match(/^\d*/)[0])
 	});
 });
-console.log(files);
 
-// Verify for change in section names
-for (let i = 0; i < settings.index.length; i++) {
-	if (files[i].sectionName !== settings.index[i]) { // If file does not match section
-		if (!settings.index.includes(files[i].sectionName)) { // If the section wasn't moved
-			// Change name of file
+// Verify for change in section names and existance of files
+for (let i = 0; i <= settings.sections.length; i++) {
+	if (files.some(file => file.sectionName === settings.sections[i])) { // If file of section don't exists
+		// Find if there is a file corresponding to the section number
+		let file = files.filter(file => file.number === i + 1)[0];
 
-			// Change title
+		if (file === undefined) { // File don't exists
+			fs.appendFileSync(`sections/${i + 1}. ${settings.sections[i]}.md`, `# ${settings.sections[i]}`);
 
+		} else {
+			// Change file name
+			//fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
+
+			// Change title name
 		}
 	}
 }
 
 // Rename files if sections moved
-for (let i = 0; i < settings.index.length; i++) {
-	let file = 1;
-	for (let j = 0; j < files.length; j++) {
-		if (files[j].sectionName === settings.index[i]) {
-			file = j;
-			break
-		}
-	}
+for (let i = 0; i < settings.sections.length; i++) {
+	let file = files.filter(file => file.sectionName === settings.sections[i])[0];
 
-	if (file !== i) {
-		fs.renameSync(`sections/${files[file].fileName}`, `sections/${i + 1}. ${settings.index[i]}.md`);
-	}
-}
-
-// Create file if not exists
-for (let i = 0; i < settings.index.length; i++) {
-	// If files don't exists
-	if (!fs.existsSync(`sections/${i + 1}. ${settings.index[i]}.md`)) {
-		fs.appendFileSync(`sections/${i + 1}. ${settings.index[i]}.md`, `# ${settings.index[i]}`);
-	} else {
-
+	if (file.number !== i + 1) {
+		fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
 	}
 }
