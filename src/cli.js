@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-// Read settings
 const toml = require('toml');
 const fs = require('fs');
+let showdown = require('showdown');
+showdown = new showdown.Converter();
 
+// Read settings
 let settings = toml.parse(fs.readFileSync('settings.toml'));
 
 if (process.argv[2] === 'update' || process.argv[2] === 'build') {
@@ -13,15 +15,14 @@ if (process.argv[2] === 'update' || process.argv[2] === 'build') {
 	}
 
 	// Get files in sections directory
-	let files = []
-	fs.readdirSync('sections/').forEach(file => {
+	let files = fs.readdirSync('sections/').map(file => {
 		let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
 		sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
-		files.push({
+		return {
 			fileName: file,
 			sectionName: sectionName,
 			number: Number(file.match(/^\d*/)[0])
-		});
+		};
 	});
 
 	// Create file for section if don't exists
@@ -44,7 +45,49 @@ if (process.argv[2] === 'update' || process.argv[2] === 'build') {
 }
 
 if (process.argv[2] === 'build') {
-	// Get build function from theme
-	const build = require(`${process.cwd()}/themes/${settings.theme}/build`);
-	build(['HOla', 'hu']);
+	// Get process function from theme
+	const proc = require(`${process.cwd()}/themes/${settings.theme}/process`);
+
+	// Get sections
+	let files = fs.readdirSync('sections/').map(file => {
+		let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
+		sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
+		return {
+			sectionName: sectionName,
+			sectionContent: showdown.makeHtml(fs.readFileSync('sections/' + file).toString())
+		}
+	});
+
+	// Process them
+	files = proc(files);
+
+	// Write them to public/
+	if (fs.existsSync('public/')) {
+		deleteFolderRecursive('public');
+	}
+
+	fs.mkdirSync('public');
+
+	for(let file of files) {
+		fs.appendFileSync(`public/${file.fileName}`, file.fileContent);
+	}
+
+	// Copy all stuff that isn't a makrdown file to public/
 }
+
+// From: https://stackoverflow.com/a/12761924
+function deleteFolderRecursive(path) {
+    var files = [];
+    if( fs.existsSync(path) ) {
+        files = fs.readdirSync(path);
+        files.forEach(function(file,index){
+            var curPath = path + "/" + file;
+            if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+};
