@@ -2,9 +2,11 @@
   "name": "bookmaker",
   "version": "0.1.0",
   "description": "A tool made to write documentation easy",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "bookmaker": "src/cli.js"
   },
   "repository": {
     "type": "git",
