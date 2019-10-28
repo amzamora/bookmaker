@@ -72,6 +72,8 @@ if (process.argv[2] === 'build') {
 		fs.appendFileSync(`public/${file.fileName}`, file.fileContent);
 	}
 
+	// Copy public theme folder content to public/ 
+
 	// Copy all stuff that isn't a makrdown file to public/
 }
 
