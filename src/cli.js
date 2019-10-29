@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const toml = require('toml');
-const fs = require('fs');
+const fs = require('fs-extra');
 let showdown = require('showdown');
 showdown = new showdown.Converter();
 
@@ -15,14 +15,17 @@ if (process.argv[2] === 'update' || process.argv[2] === 'build') {
 	}
 
 	// Get files in sections directory
-	let files = fs.readdirSync('sections/').map(file => {
-		let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
-		sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
-		return {
-			fileName: file,
-			sectionName: sectionName,
-			number: Number(file.match(/^\d*/)[0])
-		};
+	let files = [];
+	fs.readdirSync('sections/').forEach(file => {
+		if (file.split('.').pop() === 'md') {
+			let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
+			sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
+			files.push({
+				fileName: file,
+				sectionName: sectionName,
+				number: Number(file.match(/^\d*/)[0])
+			});
+		}
 	});
 
 	// Create file for section if don't exists
@@ -49,12 +52,15 @@ if (process.argv[2] === 'build') {
 	const proc = require(`${process.cwd()}/themes/${settings.theme}/process`);
 
 	// Get sections
-	let files = fs.readdirSync('sections/').map(file => {
-		let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
-		sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
-		return {
-			sectionName: sectionName,
-			sectionContent: showdown.makeHtml(fs.readFileSync('sections/' + file).toString())
+	let files = [];
+	fs.readdirSync('sections/').map(file => {
+		if (file.split('.').pop() === 'md') {
+			let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
+			sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
+			files.push({
+				sectionName: sectionName,
+				sectionContent: showdown.makeHtml(fs.readFileSync('sections/' + file).toString())
+			});
 		}
 	});
 
@@ -72,9 +78,16 @@ if (process.argv[2] === 'build') {
 		fs.appendFileSync(`public/${file.fileName}`, file.fileContent);
 	}
 
-	// Copy public theme folder content to public/ 
+	// Copy public theme folder content to public/
+	fs.copySync(`themes/${settings.theme}/public`, 'public');
 
 	// Copy all stuff that isn't a makrdown file to public/
+	let stuff = fs.readdirSync('sections/');
+	for (let path of stuff) {
+		if (path.split('.').pop() !== 'md') {
+			fs.copySync(`sections/${path}`, `public/${path}`);
+		}
+	}
 }
 
 // From: https://stackoverflow.com/a/12761924
