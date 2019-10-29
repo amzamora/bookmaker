@@ -9,14 +9,14 @@ showdown = new showdown.Converter();
 let settings = toml.parse(fs.readFileSync('settings.toml'));
 
 if (process.argv[2] === 'update' || process.argv[2] === 'build') {
-	// Create sections directory if don't exists
-	if (!fs.existsSync('sections/')) {
-		fs.mkdirSync('sections');
+	// Create content directory if don't exists
+	if (!fs.existsSync('content/')) {
+		fs.mkdirSync('content');
 	}
 
-	// Get files in sections directory
+	// Get files in content directory
 	let files = [];
-	fs.readdirSync('sections/').forEach(file => {
+	fs.readdirSync('content/').forEach(file => {
 		if (file.split('.').pop() === 'md') {
 			let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
 			sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
@@ -31,7 +31,7 @@ if (process.argv[2] === 'update' || process.argv[2] === 'build') {
 	// Create file for section if don't exists
 	for (let i = 0; i < settings.sections.length; i++) {
 		if (!files.some(file => file.sectionName === settings.sections[i])) {
-			fs.appendFileSync(`sections/${i + 1}. ${settings.sections[i]}.md`, `# ${settings.sections[i]}`);
+			fs.appendFileSync(`content/${i + 1}. ${settings.sections[i]}.md`, `# ${settings.sections[i]}`);
 		}
 	}
 
@@ -41,7 +41,7 @@ if (process.argv[2] === 'update' || process.argv[2] === 'build') {
 
 		if (file) {
 			if (file.number !== i + 1) {
-				fs.renameSync(`sections/${file.fileName}`, `sections/${i + 1}. ${settings.sections[i]}.md`);
+				fs.renameSync(`content/${file.fileName}`, `content/${i + 1}. ${settings.sections[i]}.md`);
 			}
 		}
 	}
@@ -53,13 +53,13 @@ if (process.argv[2] === 'build') {
 
 	// Get sections
 	let files = [];
-	fs.readdirSync('sections/').map(file => {
+	fs.readdirSync('content/').map(file => {
 		if (file.split('.').pop() === 'md') {
 			let sectionName = file.replace(/^.*? /, ''); // Remove number from section name
 			sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
 			files.push({
 				sectionName: sectionName,
-				sectionContent: showdown.makeHtml(fs.readFileSync('sections/' + file).toString())
+				sectionContent: showdown.makeHtml(fs.readFileSync('content/' + file).toString())
 			});
 		}
 	});
@@ -67,25 +67,25 @@ if (process.argv[2] === 'build') {
 	// Process them
 	files = proc(files);
 
-	// Write them to public/
-	if (fs.existsSync('public/')) {
-		deleteFolderRecursive('public');
+	// Write them to book/
+	if (fs.existsSync('book/')) {
+		deleteFolderRecursive('book');
 	}
 
-	fs.mkdirSync('public');
+	fs.mkdirSync('book');
 
 	for(let file of files) {
-		fs.appendFileSync(`public/${file.fileName}`, file.fileContent);
+		fs.appendFileSync(`book/${file.fileName}`, file.fileContent);
 	}
 
-	// Copy public theme folder content to public/
-	fs.copySync(`themes/${settings.theme}/public`, 'public');
+	// Copy book theme folder content to book/
+	fs.copySync(`themes/${settings.theme}/book`, 'book');
 
-	// Copy all stuff that isn't a makrdown file to public/
-	let stuff = fs.readdirSync('sections/');
+	// Copy all stuff that isn't a makrdown file to book/
+	let stuff = fs.readdirSync('content/');
 	for (let path of stuff) {
 		if (path.split('.').pop() !== 'md') {
-			fs.copySync(`sections/${path}`, `public/${path}`);
+			fs.copySync(`content/${path}`, `book/${path}`);
 		}
 	}
 }
