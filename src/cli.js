@@ -78,8 +78,8 @@ if (process.argv[2] === 'build') {
 		fs.appendFileSync(`book/${file.fileName}`, file.fileContent);
 	}
 
-	// Copy book theme folder content to book/
-	fs.copySync(`themes/${settings.theme}/book`, 'book');
+	// Copy public theme folder content to book/
+	fs.copySync(`themes/${settings.theme}/public`, 'book');
 
 	// Copy all stuff that isn't a makrdown file to book/
 	let stuff = fs.readdirSync('content/');
