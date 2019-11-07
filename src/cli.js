@@ -59,10 +59,12 @@ if (process.argv[2] === 'build') {
 			sectionName = sectionName.replace(/\..+$/, ''); // Remove extension from section name
 			files.push({
 				sectionName: sectionName,
-				sectionContent: showdown.makeHtml(fs.readFileSync('content/' + file).toString())
+				sectionContent: showdown.makeHtml(fs.readFileSync('content/' + file).toString()),
+				number: Number(file.match(/^\d*/)[0])
 			});
 		}
 	});
+	files = files.sort((a, b) => (a.number > b.number) ? 1 : -1) // Sort files (Not always in order)
 
 	// Process them
 	files = proc(files);
