@@ -51,7 +51,7 @@ if (process.argv[2] === 'build') {
 	// Get process function from theme
 	const proc = require(`${process.cwd()}/themes/${settings.theme}/process`);
 
-	// Get sections
+	// Get sections TODO: The files should be read from settings, not in the same way that in the update section
 	let files = [];
 	fs.readdirSync('content/').map(file => {
 		if (file.split('.').pop() === 'md') {
