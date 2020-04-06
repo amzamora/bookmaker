@@ -1,6 +1,6 @@
 # bookmaker
 
-A tool made to write documentation easy.
+A tool made to write documentation easier.
 
 ## Usage
 
