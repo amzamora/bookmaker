@@ -9,7 +9,7 @@ A tool made to write documentation easier.
 bookmaker init
 ```
 
-To create  initialize a new book. The folder directory will have the following configuration:
+Initializes a new bookmaker project. The folder directory ends with the following layout:
 ```
 sections/
 themes/
