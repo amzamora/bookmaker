@@ -13,19 +13,23 @@ function bookmakerBuild() {
 	}
 	const settings = toml.parse(fs.readFileSync('settings.toml'))
 
-	// Read files and convert its content to html
-	let files = fs.readdirSync('content')
+	// Read sections and convert its content to html
+	let sections = fs.readdirSync('content')
 		.filter((file) => file.split('.').pop() == 'md')
 		.map((file) => ({
-			sectionName: getSectionName(file),
-			sectionContent: showdown.makeHtml(fs.readFileSync('content/' + file).toString()),
+			name: getSectionName(file),
+			content: showdown.makeHtml(fs.readFileSync('content/' + file).toString()),
 			number: Number(file.match(/^\d*/)[0])
 		}))
-	files = files.sort((a, b) => (a.number > b.number) ? 1 : -1) // Sort files (Not always in order)
+	sections = sections.sort((a, b) => (a.number > b.number) ? 1 : -1) // Sort files (Not always in order)
+	sections = sections.map((section) => ({
+		name: section.name,
+		content: section.content
+	}))
 
 	// Get process function from theme and process them
 	const proc = require(`${process.cwd()}/themes/${settings.theme}/process`);
-	files = proc(files);
+	processedFiles = proc(sections);
 
 	// Write them to book folder
 	if (fs.existsSync('book/')) {
@@ -33,14 +37,14 @@ function bookmakerBuild() {
 	}
 	fs.mkdirSync('book');
 
-	for(let file of files) {
-		fs.appendFileSync(`book/${file.fileName}`, file.fileContent);
+	for(let file of processedFiles) {
+		fs.appendFileSync(`book/${file.name}`, file.content);
 	}
 
-	// Copy public inside theme folder to book folder
-	fs.copySync(`themes/${settings.theme}/public`, 'book');
+	// Copy assets folder from theme to book folder
+	fs.copySync(`themes/${settings.theme}/assets`, 'book');
 
-	// Copy all stuff that isn't a makrdown file to book/
+	// Copy all stuff that isn't a makrdown file to book folder
 	let stuff = fs.readdirSync('content/');
 	for (let path of stuff) {
 		if (path.split('.').pop() !== 'md') {
