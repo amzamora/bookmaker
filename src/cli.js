@@ -29,7 +29,7 @@ ${makeCyan('bookmaker init')}
     Initializes a new project.
 
 ${makeCyan('bookmaker build')}
-    It builds the the book.
+    It builds the book.
 `);
 }
 
