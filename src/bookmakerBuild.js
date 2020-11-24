@@ -7,15 +7,11 @@ function bookmakerBuild() {
     bookmakerUpdate()
 
     // Read settings
-    if (!fs.existsSync('settings.toml')) {
-        console.log('Couldn\'t find a settings.toml :(')
-        process.exit(1)
-    }
     const settings = toml.parse(fs.readFileSync('settings.toml'))
 
     // Read sections and convert its content to html
     let sections = fs.readdirSync('content')
-        .filter((file) => file.split('.').pop() == 'md')
+        .filter((file) => file.split('.').pop() === 'md' && isInSections(settings.sections, file))
         .map((file) => ({
             name: getSectionName(file),
             content: showdown.makeHtml(fs.readFileSync('content/' + file).toString()),
@@ -64,7 +60,7 @@ function bookmakerBuild() {
 function bookmakerUpdate() {
     // Read settings
     if (!fs.existsSync('settings.toml')) {
-        console.log("Couldn't find a settings.toml :(")
+        console.log("Couldn't find settings.toml :(")
         process.exit(1)
     }
     const settings = toml.parse(fs.readFileSync('settings.toml'))
@@ -106,6 +102,10 @@ function bookmakerUpdate() {
 function getSectionName(markdown_file) {
     let sectionName = markdown_file.replace(/^.*? /, ''); // Remove number from section name
     return sectionName.replace(/\..+$/, '');     // Remove extension from section name
+}
+
+function isInSections(sections, markdown_file) {
+    return sections.filter((section) => getSectionName(markdown_file) === section)[0] !== undefined
 }
 
 // From: https://stackoverflow.com/a/12761924
