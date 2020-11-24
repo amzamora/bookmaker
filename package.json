@@ -20,7 +20,9 @@
   "homepage": "https://github.com/amzamora/bookmaker#readme",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "chokidar": "^3.4.3",
     "fs-extra": "^8.1.0",
+    "live-server": "^1.2.1",
     "showdown": "^1.9.1"
   }
 }

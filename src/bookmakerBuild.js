@@ -8,7 +8,7 @@ function bookmakerBuild() {
 
     // Read settings
     if (!fs.existsSync('settings.toml')) {
-        console.log("Couldn't find a settings.toml :(")
+        console.log('Couldn\'t find a settings.toml :(')
         process.exit(1)
     }
     const settings = toml.parse(fs.readFileSync('settings.toml'))
@@ -33,9 +33,17 @@ function bookmakerBuild() {
 
     // Write them to book folder
     if (fs.existsSync('book/')) {
-        deleteFolderRecursive('book')
+        let files = fs.readdirSync('book');
+        for (let file of files) {
+            if (fs.lstatSync('book/' + file).isDirectory()) {
+                deleteFolderRecursive('book/' + file)
+            } else {
+                fs.unlinkSync('book/' + file);
+            }
+        }
+    } else {
+        fs.mkdirSync('book');
     }
-    fs.mkdirSync('book');
 
     for(let file of processedFiles) {
         fs.appendFileSync(`book/${file.name}`, file.content);
