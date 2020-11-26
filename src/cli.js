@@ -16,24 +16,24 @@ else                                  printUsage()
 // Functions
 // ---------
 function verifyArguments() {
-    if (process.argv.length < 3) {
-        printUsage()
-    }
+	if (process.argv.length < 3) {
+		printUsage()
+	}
 }
 
 function printUsage() {
-    console.log(
+	console.log(
 `${makeCyan('bookmaker init')}
-    Initializes a new project.
+	Initializes a new project.
 
 ${makeCyan('bookmaker build')}
-    It builds the book.
+	It builds the book.
 
 ${makeCyan('bookmaker serve')}
-    It builds and serves continuosly.
+	It builds and serves continuosly.
 `);
 }
 
 function makeCyan(str) {
-    return '\x1b[36m' + str + '\x1b[0m';
+	return '\x1b[36m' + str + '\x1b[0m';
 }
