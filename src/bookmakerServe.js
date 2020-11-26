@@ -21,7 +21,7 @@ function bookmakerServe() {
 		port: 3000,
 		root: 'book',
 		wait: 1000,
-		logLevel: 2
+		logLevel: 0
 	});
 }
 
